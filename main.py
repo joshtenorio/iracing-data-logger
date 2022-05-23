@@ -18,7 +18,7 @@ win = pg.GraphicsLayoutWidget(show=True)
 win.setWindowTitle('dataaa')
 
 f = open("data.csv", "w")
-f.write("Time (s),Laps (#),Speed (m/s),Gear (#),Brake (%),Throttle (%),Steering Angle (rad),X Position (m),Y Position (m)\n")
+f.write("Time (s),Laps (#),Speed (m/s),Gear (#),Brake (%),Throttle (%),Steering Angle (rad),Distance around lap (m),X Position (m),Y Position (m)\n")
 f.close()
 
 # 1) Simplest approach -- update data in the array such that plot appears to scroll
@@ -82,7 +82,8 @@ def update():
     brake = str(ir['Brake'])
     throttle = str(ir['Throttle'])
     steering = str(ir['SteeringWheelAngle'])
-    row = time + "," + laps + "," + speed + "," + gear + "," + brake + "," + throttle + "," + steering + "," + str(xPos) + "," + str(yPos) + "\n"
+    lapdist = str(ir["LapDist"])
+    row = time + "," + laps + "," + speed + "," + gear + "," + brake + "," + throttle + "," + steering + "," + lapdist + "," + str(xPos) + "," + str(yPos) + "\n"
     f.write(row)
     f.close()
 
