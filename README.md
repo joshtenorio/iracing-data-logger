@@ -17,6 +17,9 @@ $ pip install -r requirements.txt
 :: Run the lap analyzer
 $ python main.py
 
+:: Or log data
+$ python logger.py
+
 :: Leave the virtual environment
 $ deactivate
 ```
