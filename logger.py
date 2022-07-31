@@ -1,8 +1,10 @@
+import os
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QGridLayout, QPushButton, QLineEdit, QGroupBox, QVBoxLayout, QTextEdit
 from PyQt5.QtCore import QTimer
 import irsdk
 import json
+import telemetry
 
 class Logger(QWidget):
     def __init__(self) -> None:
@@ -57,7 +59,7 @@ class Logger(QWidget):
 
         # timer
         self.timer: QTimer = QTimer()
-        self.timer.setInterval(5000) # setting to 5 seconds bc all we care about rn is lap times
+        self.timer.setInterval(50)
         self.timer.timeout.connect(self.captureIRData)
 
         # irsdk setup
@@ -66,7 +68,7 @@ class Logger(QWidget):
 
         # data
         self.lapTimes = []
-        self.filename = ""
+        self.filepath = ""
 
     def log(self):
         if self.btnLog.text() == "Start Logging":
@@ -74,11 +76,17 @@ class Logger(QWidget):
             self.btnLog.setText("Stop Logging")
             self.timer.start()
             data = self.getSetupData()
-            self.filename = data["track"] + "-" + data["car"] + "-" + data["date"] + "-" + data["session #"]
-            f = open(self.filename + ".csv", "w")
-            f.write("lap (#), lap time (s)")
+            self.filepath = data["track"] + "-" + data["car"] + "-" + data["date"] + "-" + data["session #"] + "/"
+
+            if not os.path.exists(self.filepath):
+                os.makedirs(self.filepath)
+            f = open(self.filepath + "laps.csv", "w")
+            f.write("lap (#), lap time (s)\n")
             f.close()
-            f = open(self.filename + ".json", "w")
+            f = open(self.filepath + "telemetry.csv", "w")
+            f.write(telemetry.get_headers())
+            f.close()
+            f = open(self.filepath + "info.json", "w")
             json_obj = json.dumps(data, indent = 4)
             f.write(json_obj)
             f.close()
@@ -90,9 +98,9 @@ class Logger(QWidget):
 
             # write data
             i = 0
-            f = open(self.filename, "a")
+            f = open(self.filepath + "laps.csv", "a")
             for time in self.lapTimes:
-                f.write( str(i) + "," + str(time))
+                f.write( str(i) + "," + str(time) + "\n")
                 i += 1
             f.close()
             
@@ -106,6 +114,8 @@ class Logger(QWidget):
                 self.lapTimes.append(lastLapTime)
             elif lastLapTime != self.lapTimes[-1]:
                 self.lapTimes.append(lastLapTime)
+        
+        telemetry.update(self.ir, self.filepath + "telemetry.csv")
 
     def getSetupData(self):
         payload = {}
