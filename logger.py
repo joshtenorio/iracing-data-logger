@@ -108,6 +108,8 @@ class Logger(QWidget):
             self.lapTimes.clear()
     
     def captureIRData(self):
+        if self.ir is None:
+            return
         if self.ir["LapLastLapTime"]:
             lastLapTime = self.ir["LapLastLapTime"]
             if len(self.lapTimes) == 0:
