@@ -76,7 +76,7 @@ class Logger(QWidget):
             self.btnLog.setText("Stop Logging")
             self.timer.start()
             data = self.getSetupData()
-            self.filepath = data["track"] + "-" + data["car"] + "-" + data["date"] + "-" + data["session #"] + "/"
+            self.filepath = data["track"] + "-" + data["car"] + "-" + data["date"] + "-" + data["session #"] + "/" + data["session #"] + "-"
 
             if not os.path.exists(self.filepath):
                 os.makedirs(self.filepath)
